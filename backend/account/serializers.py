@@ -8,13 +8,29 @@ class loginSerializer(serializers.ModelSerializer):
         fields=['email','password']
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'name', 'email', 'password1', 'password2']
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('password2')
+        password = validated_data.pop('password1')
+        user = CustomUser(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
 
 class CaseSerializer(serializers.ModelSerializer):
-    clients = CustomUserSerializer(many=True)
+    clients = UserSerializer(many=True)
     mediator = serializers.SlugRelatedField(slug_field='user', queryset=Mediator.objects.all(), required=False, allow_null=True)
 
     class Meta:
@@ -43,7 +59,7 @@ class CaseSerializer(serializers.ModelSerializer):
         return instance
 
 class MediatorSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer()
+    user = UserSerializer()
     cases = CaseSerializer(many=True, read_only=True)
     history = CaseSerializer(many=True, read_only=True)
 
@@ -52,7 +68,7 @@ class MediatorSerializer(serializers.ModelSerializer):
         fields = ['user', 'rating', 'cases', 'history']
 
 class LawyerSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer()
+    user = UserSerializer()
     current_cases = CaseSerializer(many=True, read_only=True)
 
     class Meta:

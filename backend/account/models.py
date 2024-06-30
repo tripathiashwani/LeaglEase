@@ -71,6 +71,7 @@ class Mediator(models.Model):
     rating = models.FloatField(default=0.0)
     cases = models.ManyToManyField(Case, related_name='active_mediators', blank=True)
     history = models.ManyToManyField(Case, related_name='mediator_history', blank=True)
+    docs = models.FileField(upload_to='lawyer_docs/', blank=True, null=True)
     
     def __str__(self):
         return f"Mediator {self.user.username}"

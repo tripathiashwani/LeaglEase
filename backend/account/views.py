@@ -7,7 +7,18 @@ from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from .serializers import UserSerializer
+from rest_framework.decorators import api_view
 
+
+@api_view(['POST'])
+def signup(request):
+    if request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -18,7 +29,6 @@ def get_tokens_for_user(user):
 
 class LoginView(APIView):
     renderer_classes=[UserRenderer]
-    
     def post(self,request,format=None):
         print(request.data)
         serializer=loginSerializer(data=request.data)
@@ -35,3 +45,4 @@ class LoginView(APIView):
 
         return Response(serializer.errors,status=status.HTTP_404_NOT_FOUND)
     
+
