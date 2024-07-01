@@ -67,6 +67,19 @@ class MediatorSerializer(serializers.ModelSerializer):
         mediator = Mediator.objects.create(user=user, **validated_data)
         return mediator
 
+class LawyerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Lawyer
+        fields = ['user', 'docs']
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user = UserSerializer.create(UserSerializer(), validated_data=user_data)
+        lawyer = Lawyer.objects.create(user=user, **validated_data)
+        return lawyer
+
 
 class CaseSerializer(serializers.ModelSerializer):
     clients = UserSerializer(many=True)
@@ -97,28 +110,5 @@ class CaseSerializer(serializers.ModelSerializer):
 
         return instance
 
-# class MediatorSerializer(serializers.ModelSerializer):
-#     user = UserSerializer()
 
-#     class Meta:
-#         model = Mediator
-#         fields = ['user', 'rating', 'docs']
 
-#     def create(self, validated_data):
-#         password = validated_data.pop('password1')
-#         user = CustomUser(**validated_data)  # Use create_user to create CustomUser
-#         mediator = Mediator.objects.create(user=user, **validated_data)
-#         return mediator
-
-class LawyerSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = Lawyer
-        fields = ['user', 'docs']
-
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        user = CustomUser.objects.create_user(**user_data)
-        lawyer = Lawyer.objects.create(user=user, **validated_data)
-        return lawyer
