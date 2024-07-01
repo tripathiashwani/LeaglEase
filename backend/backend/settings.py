@@ -1,18 +1,13 @@
 
 from datetime import timedelta
 from pathlib import Path
+from . import private
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-=ftsk4!0j2tluosb49(w4l5@y!-#r^wk#pt)q+3@2m^ivmy*k+"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -33,7 +28,8 @@ INSTALLED_APPS = [
     "search",
     "vdocon",
     "backend",
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'django_twilio',
 ]
 
 MIDDLEWARE = [
@@ -162,3 +158,10 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+
+
+TWILIO_ACCOUNT_SID = private.TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN = private.TWILIO_AUTH_TOKEN
+
+TWILIO_DEFAULT_CALLERID = private.TWILIO_DEFAULT_CALLERID

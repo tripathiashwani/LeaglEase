@@ -10,6 +10,16 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from django.http import JsonResponse
+
+
+@api_view(['GET'])
+def ProfileView(request):
+    return JsonResponse({
+        'id': request.user.id,
+        'email': request.data.get('email'),
+        'docs':request.data.get('docs')
+    })
 
 
 @api_view(['POST'])
