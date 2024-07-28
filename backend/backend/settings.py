@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "backend",
     'rest_framework_simplejwt',
     'django_twilio',
+    "graphene_django",
 ]
 
 MIDDLEWARE = [

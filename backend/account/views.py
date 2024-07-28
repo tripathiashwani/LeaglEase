@@ -8,7 +8,6 @@ from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
-from rest_framework.decorators import api_view
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.http import JsonResponse
 

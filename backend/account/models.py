@@ -38,7 +38,6 @@ class CustomUserManager(UserManager):
     
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    # Add any extra fields if necessary
 
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -57,7 +56,6 @@ class Case(models.Model):
         ('civil', 'Civil'),
         ('criminal', 'Criminal'),
         ('family', 'Family'),
-        # Add other types as needed
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -104,3 +102,34 @@ class PhoneOTP(models.Model):
     def __str__(self):
         return str(self.otp)
     
+
+
+class Notification(models.Model):
+    SENT = 'sent'
+    ACCEPTED = 'accepted'
+    REJECTED = 'rejected'
+
+    STATUS_CHOICES = (
+        (SENT, 'Sent'),
+        (ACCEPTED, 'Accepted'),
+        (REJECTED, 'Rejected'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_for = models.ForeignKey(CustomUser, related_name='received_notification', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(CustomUser, related_name='created_notification', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=SENT)
+
+
+class Meeting(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    case = models.ForeignKey(Case, related_name='meetings', on_delete=models.CASCADE)
+    mediator = models.ForeignKey(Mediator, related_name='meetings', on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    duration = models.DurationField()
+    notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(CustomUser, related_name='created_meetings', on_delete=models.CASCADE)
+    attendees = models.ManyToManyField(CustomUser, related_name='meetings', blank=True)
+    status = models.CharField(max_length=20, choices=Notification.STATUS_CHOICES, default=Notification.SENT)

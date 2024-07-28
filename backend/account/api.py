@@ -13,9 +13,18 @@ from .models import PhoneOTP,CustomUser
 from django.utils.text import slugify
 from io import BytesIO
 from .helper import MessageHandler
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
+
+    
 
 def otp_generator():
     otp = random.randint(99999, 999999)
@@ -146,5 +155,7 @@ class ValidateOTP(APIView):
                 'detail' : 'Either phone or otp was not recieved in Post request'
             })
 
-
-
+@api_view(['POST'])
+def SendNotification(request,pk):
+    sent_by=request.user
+    send_to=CustomUser.all.filter(pk=pk)
